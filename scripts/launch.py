@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 
 FILEPATH = os.path.dirname(os.path.realpath(__file__))
 RAW_PATH = os.path.join(FILEPATH, '../raw')
@@ -14,7 +15,7 @@ def main():
     proc_dirs = set(os.listdir(PROC_PATH))
     missing_dirs = list(raw_dirs.difference(proc_dirs))
     print(missing_dirs, raw_dirs_dict)
-    for directory in missing_dirs[:1]:
+    for directory in missing_dirs:
         print(directory)
         process(raw_dirs_dict[directory], directory)
 
@@ -27,6 +28,7 @@ and the wav files
     '''
     rel_in_dir = os.path.join(RAW_PATH, in_dir)
     rel_out_dir = os.path.join(PROC_PATH, out_dir, 'wav')
+    rel_ali_dir = os.path.join(PROC_PATH, out_dir, 'alignment')
     os.makedirs(rel_out_dir)
     doc_file, wav_file = get_doc_wav(rel_in_dir)
     convert_doc(doc_file, rel_out_dir, out_dir+'.txt')
@@ -35,17 +37,27 @@ and the wav files
 def get_doc_wav(path):
     for f in os.listdir(path):
         f_low = f.lower()
+        f_path = os.path.join(path, f)
         if f_low.endswith('doc') or f_low.endswith('docx'):
-            doc = f
+            doc = f_path
         elif f_low.endswith('wav') or f_low.endswith('mp3'):
-            wav = f
+            wav = f_path
     return doc, wav
 
 def convert_doc(doc_file, out_dir, filename):
-    pass
+    args = ['soffice', '--headless', '--convert-to', 'txt', doc_file,
+            '--outdir', out_dir]
+    subprocess.call(args)
+    # Assumes there only one txt file exists
+    txt = [f for f in os.listdir(out_dir) if f.endswith('txt')][0]
+    #TODO Instead of rename remove \ufeff, clean excessive space and rewrite
+    os.rename(os.path.join(out_dir, txt), os.path.join(out_dir, filename))
 
 def convert_wav(wav_file, out_dir, filename):
-    pass
+    out_filepath = os.path.join(out_dir, filename)
+    args = ['ffmpeg', '-y', '-hide_banner', '-loglevel', 'panic',\
+            '-i', wav_file, '-ac', '1', '-ar', '16000', out_filepath]
+    subprocess.call(args)
 
 if __name__ == "__main__":
     main()
