@@ -4,3 +4,4 @@
 *.doc
 *.docx
 *.txt
+__pycache__/

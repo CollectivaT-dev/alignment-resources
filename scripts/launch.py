@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import subprocess
 
@@ -50,8 +51,18 @@ def convert_doc(doc_file, out_dir, filename):
     subprocess.call(args)
     # Assumes there only one txt file exists
     txt = [f for f in os.listdir(out_dir) if f.endswith('txt')][0]
-    #TODO Instead of rename remove \ufeff, clean excessive space and rewrite
-    os.rename(os.path.join(out_dir, txt), os.path.join(out_dir, filename))
+    conv_file_path = os.path.join(out_dir, txt)
+    with open(conv_file_path) as conv_file,\
+         open(os.path.join(out_dir, filename), 'w') as final_file:
+        clean_text = clean(conv_file.read())
+        final_file.write(clean_text)
+    os.remove(conv_file_path)
+
+def clean(text):
+    text = re.sub('\ufeff| {2,}|\t', ' ', text)
+    text = re.sub('\n{2,}', '\n', text)
+    text = re.sub('\w\w\d\d\d – .+', '', text)
+    return text
 
 def convert_wav(wav_file, out_dir, filename):
     out_filepath = os.path.join(out_dir, filename)
