@@ -5,3 +5,7 @@
 *.docx
 *.txt
 __pycache__/
+*.yaml
+*.log
+venv/
+raw/

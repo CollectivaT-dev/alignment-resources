@@ -1,0 +1,6 @@
+[submodule "num2word"]
+	path = num2word
+	url = git@github.com:gullabi/num2word-multilang.git
+[submodule "STT-align"]
+	path = STT-align
+	url = git@github.com:gullabi/STT-align.git
