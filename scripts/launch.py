@@ -13,15 +13,24 @@ def main():
     '''
     raw_dirs = set([convert(d) for d in os.listdir(RAW_PATH)])
     raw_dirs_dict = {convert(d):d for d in os.listdir(RAW_PATH)}
-    proc_dirs = set(os.listdir(PROC_PATH))
+    proc_dirs = get_processed_dirs(PROC_PATH)
     missing_dirs = list(raw_dirs.difference(proc_dirs))
-    print(missing_dirs, raw_dirs_dict)
+    print(missing_dirs)
     for directory in missing_dirs:
         print(directory)
         process(raw_dirs_dict[directory], directory)
 
 def convert(string):
     return string.replace(' ','_').lower()
+
+def get_processed_dirs(top_path):
+    paths = os.listdir(top_path)
+    dirs = []
+    for path in paths:
+        if os.path.isfile(os.path.join(top_path, path,
+                                       'wav', path+'.wav')):
+            dirs.append(path)
+    return dirs
 
 def process(in_dir, out_dir):
     '''Create MFA compatible dir, convert the doc files 
@@ -30,7 +39,8 @@ and the wav files
     rel_in_dir = os.path.join(RAW_PATH, in_dir)
     rel_out_dir = os.path.join(PROC_PATH, out_dir, 'wav')
     rel_ali_dir = os.path.join(PROC_PATH, out_dir, 'alignment')
-    os.makedirs(rel_out_dir)
+    if not os.path.isdir(rel_out_dir):
+        os.makedirs(rel_out_dir)
     doc_file, wav_file = get_doc_wav(rel_in_dir)
     convert_doc(doc_file, rel_out_dir, out_dir+'.txt')
     convert_wav(wav_file, rel_out_dir, out_dir+'.wav')
@@ -61,7 +71,7 @@ def convert_doc(doc_file, out_dir, filename):
 def clean(text):
     text = re.sub('\ufeff| {2,}|\t', ' ', text)
     text = re.sub('\n{2,}', '\n', text)
-    text = re.sub('\w\w\d\d\d – .+', '', text)
+    text = re.sub('\w\w\d\d\d.+', '', text)
     return text
 
 def convert_wav(wav_file, out_dir, filename):
