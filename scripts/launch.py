@@ -6,6 +6,7 @@ import subprocess
 FILEPATH = os.path.dirname(os.path.realpath(__file__))
 RAW_PATH = os.path.join(FILEPATH, '../raw')
 PROC_PATH = os.path.join(FILEPATH, '../process')
+N2W_PATH = os.path.join(FILEPATH, '../num2word')
 
 def main():
     '''Checks the path raw compares it to process
@@ -13,22 +14,33 @@ def main():
     '''
     raw_dirs = set([convert(d) for d in os.listdir(RAW_PATH)])
     raw_dirs_dict = {convert(d):d for d in os.listdir(RAW_PATH)}
-    proc_dirs = get_processed_dirs(PROC_PATH)
+    proc_dirs = get_processed_dirs(PROC_PATH, '.wav')
     missing_dirs = list(raw_dirs.difference(proc_dirs))
     print(missing_dirs)
     for directory in missing_dirs:
         print(directory)
         process(raw_dirs_dict[directory], directory)
 
+    norm_dirs = get_processed_dirs(PROC_PATH, '_norm.txt')
+    missing_norm_dirs = list(raw_dirs.difference(norm_dirs))
+    for directory in missing_norm_dirs:
+        print('normalizing text of %s'%(directory))
+        text_source = os.path.join(PROC_PATH, directory, 'wav',
+                                   directory+'.txt')
+        text_target = text_source.replace('.txt', '_norm.txt')
+        args = ['python',os.path.join(N2W_PATH, 'num2word_multilang.py'),
+                '-i', text_source, '-o', text_target, '-l', 'lad']
+        subprocess.call(args)
+
 def convert(string):
     return string.replace(' ','_').lower()
 
-def get_processed_dirs(top_path):
+def get_processed_dirs(top_path, query):
     paths = os.listdir(top_path)
     dirs = []
     for path in paths:
         if os.path.isfile(os.path.join(top_path, path,
-                                       'wav', path+'.wav')):
+                                       'wav', path+query)):
             dirs.append(path)
     return dirs
 

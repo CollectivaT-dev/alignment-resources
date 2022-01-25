@@ -3,7 +3,6 @@
 *.mp3
 *.doc
 *.docx
-*.txt
 __pycache__/
 *.yaml
 *.log
