@@ -43,6 +43,13 @@ alignment please use the alphabet file in `resources/es/alphabet.txt`
 cp resources/es/alphabet.txt STT-align/models/es/
 ```
 
+Document conversion is done using libreoffice command-line tools. To install:
+
+```
+sudo apt install libreoffice-common
+sudo apt-get install libreoffice-writer
+```
+
 # Data preparation
 The `scripts/launch.py` script looks for directories in `raw`, which each
 directory would have an audio file and a doc(x) file with its transcriptions.
