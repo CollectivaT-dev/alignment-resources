@@ -19,8 +19,9 @@ After create a virtualenvironment and install all the requirements
 ```
 python -m venv venv
 source venv/bin/activate
-pip install -r num2word/requirements.txt
-pip install -r STT-align/requirements.txt
+python -m pip install -U pip
+python -m pip install -r num2word/requirements.txt
+python -m pip install -r STT-align/requirements.txt
 ```
 
 `num2word` needs apertium to run, since it first converts the numbers to words
