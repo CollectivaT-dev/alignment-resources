@@ -127,10 +127,6 @@ python STT-align/align/align.py --audio process/karen_artikolo01/wav/karen_artik
 
 This generates a single json file in the aligned folder. By using that and the audio file, the audio segments can be created.
 
-```
-python STT-align/scripts/segment.py aligned/karen_artikolo01_aligned.json process/karen_artikolo01/wav/karen_artikolo01.wav /home/baybars/label_data/karen_artikolo01
-```
-
 # Segmentation
 
 Altough generic the `STT-align/scripts/segment.py` is designed to work with [label-studio](https://github.com/heartexlabs/label-studio) and generate a `task.json` that is importable to label-studio for quality control. 
